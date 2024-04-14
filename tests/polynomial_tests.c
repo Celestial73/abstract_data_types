@@ -98,6 +98,7 @@ void test_addPolynomials()
     }
     Polynomial *addedPolynomial = addPolynomials(&p1, &p2);
     assert(comparePolynomials(&tester, addedPolynomial));
+    free(addedPolynomial);
     printf("Test Passed: addPolynomials\n");
 }
 
@@ -125,5 +126,6 @@ void test_multiplyPolynomials()
     }
     Polynomial *multipliedPolynomial = multiplyPolynomials(&p1, &p2);
     assert(comparePolynomials(&tester, multipliedPolynomial));
+    free(multipliedPolynomial);
     printf("Test Passed: multiplyPolynomials\n");
 }

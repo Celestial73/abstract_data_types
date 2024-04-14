@@ -1,3 +1,5 @@
+// Этот файл содержит только
+
 // #include "./types/integer.h"
 // #include "./types/real.h"
 // #include "./types/complex.h"
@@ -77,6 +79,7 @@ void multiplicationOfPolynomials()
     Polynomial *multiplied_polynomial = multiplyPolynomials(&p1, &p2);
     printf("The polynomial after multiplication is:\n");
     printPolynomial(multiplied_polynomial);
+    free(multiplied_polynomial);
 }
 
 void compositionOfPolynomials()
@@ -101,6 +104,7 @@ void multiplicationOfPolynomialByScalar()
     Polynomial *multiplied_polynomial = multiplyPolynomialByScalar(&p1, scalar);
     printf("The polynomial after multiplication is:\n");
     printPolynomial(multiplied_polynomial);
+    free(multiplied_polynomial);
 }
 
 void calculationOfPolynomial()

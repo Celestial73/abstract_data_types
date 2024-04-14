@@ -1,0 +1,14 @@
+{
+  "files.associations": {
+    "*.css": "tailwindcss",
+    "polynomial.h": "c",
+    "integer.h": "c",
+    "real.h": "c",
+    "string.h": "c",
+    "type.h": "c",
+    "cmath": "c",
+    "complex": "c",
+    "complex_tests.h": "c",
+    "polynomial_tests.h": "c"
+  }
+}
