@@ -1,4 +1,5 @@
 Команда для компиляции через gcc:
+
 gcc laba.c ./utility/polynomial.c ./utility/typeInfo.c ./types/integer.c ./types/real.c ./types/complex.c ./tests/complex_tests.c ./tests/real_tests.c ./tests/integer_tests.c ./tests/polynomial_tests.c -o laba.exe
 
 
