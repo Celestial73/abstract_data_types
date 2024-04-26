@@ -1,7 +1,6 @@
 Команда для компиляции через gcc:
 
-gcc laba.c ./utility/polynomial.c ./utility/typeInfo.c ./types/integer.c ./types/real.c ./types/complex.c ./tests/complex_tests.c ./tests/real_tests.c ./tests/integer_tests.c ./tests/polynomial_tests.c -o laba.exe
-
+gcc polynomials.c ./utility/polynomial.c ./utility/typeInfo.c ./types/real.c ./types/integer.c ./types/complex.c ./tests/integer_tests.c ./tests/polynomial_tests.c ./tests/real_tests.c ./tests/complex_tests.c  -o polynomials.exe
 
 
 Изменения с предыдущей сдачи:
