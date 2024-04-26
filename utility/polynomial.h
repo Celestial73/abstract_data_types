@@ -1,6 +1,3 @@
-#ifndef MAIN_H
-#define MAIN_H
-
 #pragma once
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,28 +8,25 @@
 
 typedef struct
 {
-
     int size;
-    int element_size;
     void *coefficients;
 
-    TypeInfo *(*getTypeInfo)();
-
+    const TypeInfo *type_info;
 } Polynomial;
 
-void setValue(Polynomial *p, int i, void *value);
-void *getValue(Polynomial *p, int i);
+void setValue(Polynomial *p, const int i, const void *value);
+void getValue(const Polynomial *p, const int i, void *destination);
 
-void *composePolynomials(Polynomial *p1, Polynomial *p2);
-void copyPolynomials(Polynomial *p1, Polynomial *p2);
-void printPolynomial(Polynomial *p);
-Polynomial *addPolynomials(Polynomial *p1, Polynomial *p2);
-Polynomial *multiplyPolynomials(Polynomial *p1, Polynomial *p2);
-Polynomial *multiplyPolynomialByScalar(Polynomial *p, void *);
-void *calculatePolynomial(Polynomial *p1, void *argument);
+void composePolynomials(const Polynomial *p1, const Polynomial *p2, void *result);
+void copyPolynomialStucture(Polynomial *destination, const Polynomial *source);
+void printPolynomial(const Polynomial *p);
+void addPolynomials(const Polynomial *p1, const Polynomial *p2, Polynomial *result);
+void multiplyPolynomials(const Polynomial *p1, const Polynomial *p2, Polynomial *result);
+void multiplyPolynomialByScalar(const Polynomial *p, const void *scalar, Polynomial *result);
+void calculatePolynomial(const Polynomial *p1, const void *argument, void *result);
+void createPolynomial(const TypeInfo *type_info, const int size, Polynomial *result);
+void deletePolynomial(Polynomial *polynomial);
 
-int comparePolynomials(Polynomial *p1, Polynomial *p2);
+int comparePolynomials(const Polynomial *p1, const Polynomial *p2);
 
 void test_addPolynomial();
-
-#endif

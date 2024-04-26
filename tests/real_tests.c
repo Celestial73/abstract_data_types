@@ -30,13 +30,14 @@ void test_createRealTypeInfo()
 
 void test_createRealPolynomial()
 {
-    Polynomial polynomial = createRealPolynomial(5);
+    Polynomial *polynomial = malloc(sizeof(Polynomial));
+    createPolynomial(getRealTypeInfo(), 5, polynomial);
 
-    assert(polynomial.size == 5);
-    assert(polynomial.element_size == sizeof(double));
-    assert(polynomial.getTypeInfo == getRealTypeInfo);
+    assert(polynomial->size == 5);
+    assert(polynomial->type_info->element_size == sizeof(double));
+    assert(polynomial->type_info == getRealTypeInfo());
 
-    printf("Test Passed: createRealPolynomial\n");
+    printf("Test Passed: createIntegerPolynomial\n");
 }
 
 int compareReal(double x, double y)
@@ -53,7 +54,8 @@ void test_realAddition()
 {
     double c1 = 1.5;
     double c2 = 2.33;
-    void *result = realAddition(&c1, &c2);
+    void *result = malloc(sizeof(double));
+    realAddition(&c1, &c2, result);
     double expected_result = 3.83;
     assert(compareReal(*((double *)result), expected_result));
     free(result);
@@ -65,7 +67,8 @@ void test_realMultiplication()
     double c1 = 5.5;
     double c2 = 8.3;
 
-    double *result = realMultiplication(&c1, &c2);
+    void *result = malloc(sizeof(double));
+    realMultiplication(&c1, &c2, result);
     double expected_result = 45.65;
     assert(compareReal(*((double *)result), expected_result));
 
@@ -75,7 +78,8 @@ void test_realMultiplication()
 void test_realPower()
 {
     double c = 2.5;
-    void *result = realPower(&c, 3);
+    void *result = malloc(sizeof(double));
+    realPower(&c, 3, result);
     double expected_result = 15.625;
     assert(compareReal(*((double *)result), expected_result));
 

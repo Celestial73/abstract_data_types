@@ -9,6 +9,11 @@
     "cmath": "c",
     "complex": "c",
     "complex_tests.h": "c",
-    "polynomial_tests.h": "c"
+    "polynomial_tests.h": "c",
+    "initializer_list": "c",
+    "type_traits": "c",
+    "xstring": "c",
+    "xutility": "c",
+    "math.h": "c"
   }
 }

@@ -3,6 +3,7 @@
 TypeInfo *getIntegerTypeInfo()
 {
     static TypeInfo instance;
+    // printf("Integer Type. Instance's initialized value is: %d\n", instance.initialized);
     if (instance.initialized == 0)
     {
         instance = createIntegerTypeInfo();
@@ -15,64 +16,56 @@ TypeInfo createIntegerTypeInfo()
     TypeInfo type_info;
 
     type_info.initialized = 1;
-
+    type_info.element_size = 4;
     type_info.add = integerAddition;
     type_info.inputValue = integerInput;
     type_info.printElement = integerPrint;
     type_info.multiply = integerMultiplication;
     type_info.power = integerPower;
+    type_info.makeNeutralForAddition = integerMakeNeutralForAddition;
+    type_info.makeNeutralForMultiplication = integerMakeNeutralForMultiplication;
 
     return type_info;
 }
 
-Polynomial createIntegerPolynomial(int size)
+void integerAddition(const void *v1, const void *v2, void *result)
 {
-    Polynomial polynomial;
-
-    polynomial.size = size;
-    polynomial.element_size = sizeof(int);
-    polynomial.coefficients = malloc(polynomial.size * polynomial.element_size);
-
-    polynomial.getTypeInfo = getIntegerTypeInfo;
-    return polynomial;
+    *((int *)result) = (*((int *)v1)) + (*((int *)v2));
 }
 
-void *integerAddition(void *v1, void *v2)
+void integerMultiplication(const void *v1, const void *v2, void *result)
 {
-    int *res = (int *)malloc(sizeof(int));
-    *res = (*((int *)v1)) + (*((int *)v2));
-    return (void *)res;
+    *((int *)result) = (*((int *)v1)) * (*((int *)v2));
 }
 
-void *integerMultiplication(void *v1, void *v2)
+void integerInput(void *result)
 {
-    int *res = (int *)malloc(sizeof(int));
-    *res = (*((int *)v1)) * (*((int *)v2));
-    return (void *)res;
-}
-
-void *integerInput()
-{
-    int *res = (int *)malloc(sizeof(int));
     int d;
     scanf("%d", &d);
-    memcpy(res, &d, sizeof(int));
-    return (void *)res;
+    memcpy(result, &d, sizeof(int));
 }
 
-void *integerPrint(void *v)
+void integerPrint(const void *v)
 {
     printf("%d", *(int *)v);
-    return (void *)v;
 }
 
-void *integerPower(void *v1, int v2)
+void integerPower(const void *v1, const int v2, void *result)
 {
-    int *res = (int *)malloc(sizeof(int));
+    int *res = (int *)result;
     *res = 1;
     for (int i = 0; i < v2; i++)
     {
         *res = (*res) * (*((int *)v1));
     }
-    return (void *)res;
+}
+
+void integerMakeNeutralForAddition(void *destination)
+{
+    *((int *)destination) = 0;
+}
+
+void integerMakeNeutralForMultiplication(void *destination)
+{
+    *((int *)destination) = 1;
 }

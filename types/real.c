@@ -3,6 +3,7 @@
 TypeInfo *getRealTypeInfo()
 {
     static TypeInfo instance;
+    // printf("Real Type. Instance's initialized value is: %d\n", instance.initialized);
     if (instance.initialized == 0)
     {
         instance = createRealTypeInfo();
@@ -21,56 +22,52 @@ TypeInfo createRealTypeInfo()
     type_info.printElement = realPrint;
     type_info.multiply = realMultiplication;
     type_info.power = realPower;
+    type_info.makeNeutralForAddition = realMakeNeutralForAddition;
+    type_info.makeNeutralForMultiplication = realMakeNeutralForMultiplication;
+    type_info.element_size = sizeof(double);
 
     return type_info;
 }
 
-Polynomial createRealPolynomial(int size)
+void realAddition(const void *v1, const void *v2, void *result)
 {
-    Polynomial polynomial;
-
-    polynomial.size = size;
-    polynomial.element_size = sizeof(double);
-    polynomial.coefficients = malloc(polynomial.size * polynomial.element_size);
-
-    polynomial.getTypeInfo = getRealTypeInfo;
-    return polynomial;
-}
-
-void *realAddition(void *v1, void *v2)
-{
-    double *res = (double *)malloc(sizeof(double));
+    double *res = (double *)result;
     *res = (*((double *)v1)) + (*((double *)v2));
-    return (void *)res;
 }
 
-void *realMultiplication(void *v1, void *v2)
+void realMultiplication(const void *v1, const void *v2, void *result)
 {
-    double *res = (double *)malloc(sizeof(double));
+    double *res = (double *)result;
     *res = (*((double *)v1)) * (*((double *)v2));
-    return (void *)res;
 }
 
-void *realInput()
+void realInput(void *result)
 {
-    double *res = (double *)malloc(sizeof(double));
+    double *res = (double *)result;
     scanf("%lf", res);
-    return (void *)res;
 }
 
-void *realPrint(void *v)
+void realPrint(const void *v)
 {
     printf("%f", *(double *)v);
-    return (void *)v;
 }
 
-void *realPower(void *v1, int v2)
+void realPower(const void *v1, const int v2, void *result)
 {
-    double *res = (double *)malloc(sizeof(double));
+    double *res = (double *)result;
     *res = 1;
     for (int i = 0; i < v2; i++)
     {
         *res = (*res) * (*((double *)v1));
     }
-    return (void *)res;
+}
+
+void realMakeNeutralForAddition(void *destination)
+{
+    *((double *)destination) = 0.0;
+}
+
+void realMakeNeutralForMultiplication(void *destination)
+{
+    *((double *)destination) = 1.0;
 }

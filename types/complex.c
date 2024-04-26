@@ -3,6 +3,7 @@
 TypeInfo *getComplexTypeInfo()
 {
     static TypeInfo instance;
+    // printf("Complex Type. Instance's initialized value is: %d\n", instance.initialized);
     if (instance.initialized == 0)
     {
         instance = createComplexTypeInfo();
@@ -21,62 +22,61 @@ TypeInfo createComplexTypeInfo()
     type_info.printElement = complexPrint;
     type_info.multiply = complexMultiplication;
     type_info.power = complexPower;
+    type_info.makeNeutralForAddition = complexMakeNeutralForAddition;
+    type_info.makeNeutralForMultiplication = complexMakeNeutralForMultiplication;
+    type_info.element_size = sizeof(Complex);
 
     return type_info;
 }
 
-Polynomial createComplexPolynomial(int size)
+void complexAddition(const void *v1, const void *v2, void *result)
 {
-    Polynomial polynomial;
-
-    polynomial.size = size;
-    polynomial.element_size = sizeof(Complex);
-    polynomial.coefficients = malloc(polynomial.size * polynomial.element_size);
-
-    polynomial.getTypeInfo = getComplexTypeInfo;
-    return polynomial;
+    Complex *res = (Complex *)result;
+    res->real = (((Complex *)v1)->real) + (((Complex *)v2)->real);
+    res->img = (((Complex *)v1)->img) + (((Complex *)v2)->img);
 }
 
-void *complexAddition(void *v1, void *v2)
+void complexMultiplication(const void *v1, const void *v2, void *result)
 {
-    Complex *temp = (Complex *)malloc(sizeof(Complex));
-    temp->real = (((Complex *)v1)->real) + (((Complex *)v2)->real);
-    temp->img = (((Complex *)v1)->img) + (((Complex *)v2)->img);
-    return (void *)temp;
+    Complex *res = (Complex *)result;
+    res->real = (((Complex *)v1)->real) * (((Complex *)v2)->real) - ((((Complex *)v1)->img) * (((Complex *)v2)->img));
+    res->img = (((Complex *)v1)->real) * (((Complex *)v2)->img) + ((((Complex *)v1)->img) * (((Complex *)v2)->real));
 }
 
-void *complexMultiplication(void *v1, void *v2)
+void complexInput(void *result)
 {
-    Complex *temp = (Complex *)malloc(sizeof(Complex));
-    temp->real = (((Complex *)v1)->real) * (((Complex *)v2)->real) - ((((Complex *)v1)->img) * (((Complex *)v2)->img));
-    temp->img = (((Complex *)v1)->real) * (((Complex *)v2)->img) + ((((Complex *)v1)->img) * (((Complex *)v2)->real));
-    return (void *)temp;
-}
-
-void *complexInput()
-{
-    Complex *res = (Complex *)malloc(sizeof(Complex));
+    Complex *res = (Complex *)result;
     scanf("%lf", &(res->real));
     scanf("%lf", &(res->img));
-    return (void *)res;
 }
 
-void *complexPrint(void *v)
+void complexPrint(const void *v)
 {
     printf("%f + %fi", ((Complex *)v)->real, ((Complex *)v)->img);
-    return (void *)v;
 }
 
-void *complexPower(void *v1, int v2)
+void complexPower(const void *v1, const int v2, void *result)
 {
-    Complex *temp = (Complex *)malloc(sizeof(Complex));
-    temp->real = ((Complex *)v1)->real;
-    temp->img = ((Complex *)v1)->img;
+    Complex *res = (Complex *)result;
+    res->real = ((Complex *)v1)->real;
+    res->img = ((Complex *)v1)->img;
+    void *mult_result = malloc(sizeof(Complex));
     for (int i = 0; i < v2 - 1; i++)
     {
-        void *mult_result = complexMultiplication((void *)temp, v1);
-        memcpy(temp, mult_result, sizeof(Complex));
-        free(mult_result);
+        complexMultiplication((void *)res, v1, mult_result);
+        memcpy(res, mult_result, sizeof(Complex));
     }
-    return (void *)temp;
+    free(mult_result);
+}
+
+void complexMakeNeutralForAddition(void *destination)
+{
+    Complex zero = {0, 0};
+    *((Complex *)destination) = zero;
+}
+
+void complexMakeNeutralForMultiplication(void *destination)
+{
+    Complex one = {1, 1};
+    *((Complex *)destination) = one;
 }

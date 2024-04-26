@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../utility/polynomial.h"
 #include "integer_tests.h"
 #include "real_tests.h"

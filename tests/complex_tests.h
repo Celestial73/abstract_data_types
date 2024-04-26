@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../types/complex.h"
 
 void test_complexAddition();

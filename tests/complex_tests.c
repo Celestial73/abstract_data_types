@@ -30,13 +30,15 @@ void test_createComplexTypeInfo()
 
 void test_createComplexPolynomial()
 {
-    Polynomial polynomial = createComplexPolynomial(5);
+    Polynomial *polynomial = malloc(sizeof(Polynomial));
+    createPolynomial(getComplexTypeInfo(), 5, polynomial);
 
-    assert(polynomial.size == 5);
-    assert(polynomial.element_size == sizeof(Complex));
-    assert(polynomial.getTypeInfo == getComplexTypeInfo);
+    assert(polynomial->size == 5);
+    assert(polynomial->type_info->element_size == sizeof(Complex));
+    assert(polynomial->type_info == getComplexTypeInfo());
 
-    printf("Test Passed: createComplexPolynomial\n");
+    printf("Test Passed: createIntegerPolynomial\n");
+    deletePolynomial(polynomial);
 }
 
 void test_complexAddition()
@@ -44,12 +46,14 @@ void test_complexAddition()
     Complex c1 = {3.0, 4.0};
     Complex c2 = {1.0, 2.0};
 
-    Complex *result = complexAddition(&c1, &c2);
+    Complex *result = malloc(sizeof(Complex));
+    complexAddition(&c1, &c2, result);
 
     assert(result->real == 4.0);
     assert(result->img == 6.0);
 
     printf("Test Passed: complexAddition\n");
+    free(result);
 }
 
 void test_complexMultiplication()
@@ -57,22 +61,26 @@ void test_complexMultiplication()
     Complex c1 = {3.0, 4.0};
     Complex c2 = {1.0, 2.0};
 
-    Complex *result = complexMultiplication(&c1, &c2);
+    Complex *result = malloc(sizeof(Complex));
+    complexMultiplication(&c1, &c2, result);
 
     assert(result->real == -5.0);
     assert(result->img == 10.0);
 
     printf("Test Passed: complexMultiplication\n");
+    free(result);
 }
 
 void test_complexPower()
 {
     Complex c = {3.0, 4.0};
 
-    Complex *result = complexPower(&c, 3);
+    Complex *result = malloc(sizeof(Complex));
+    complexPower(&c, 3, result);
 
     assert(result->real == -117.0);
     assert(result->img == 44.0);
 
     printf("Test Passed: complexPower\n");
+    free(result);
 }

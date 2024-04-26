@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../types/integer.h"
 
 void test_integerAddition();

@@ -1,148 +1,173 @@
 #include "polynomial.h"
 
-int comparePolynomials(Polynomial *p1, Polynomial *p2)
+void createPolynomial(const TypeInfo *type_info, const int size, Polynomial *destination)
 {
-    if (!(p1->getTypeInfo() == p2->getTypeInfo()))
+    destination->size = size;
+    destination->type_info = type_info;
+    destination->coefficients = malloc((type_info->element_size) * size);
+}
+
+void deletePolynomial(Polynomial *polynomial)
+{
+    free(polynomial->coefficients);
+    free(polynomial);
+}
+
+int comparePolynomials(const Polynomial *p1, const Polynomial *p2)
+{
+    if (!(p1->type_info == p2->type_info))
     {
         return 0;
     }
+    void *first_value = malloc(p1->type_info->element_size);
+    void *second_value = malloc(p1->type_info->element_size);
     for (int i = 0; i < (*p1).size; i++)
     {
-        void *first_value = getValue(p1, i);
-        void *second_value = getValue(p2, i);
-        if ((memcmp(first_value, second_value, p1->element_size)))
+        getValue(p1, i, first_value);
+        getValue(p2, i, second_value);
+        if ((memcmp(first_value, second_value, p1->type_info->element_size)))
         {
             return 0;
         }
-        free(first_value);
-        free(second_value);
     }
+    free(first_value);
+    free(second_value);
     return 1;
 }
 
-Polynomial *addPolynomials(Polynomial *p1, Polynomial *p2)
+void addPolynomials(const Polynomial *p1, const Polynomial *p2, Polynomial *result)
 {
-    Polynomial *res = (Polynomial *)malloc(sizeof(Polynomial));
-    copyPolynomials(res, p1);
+    createPolynomial(p1->type_info, p1->size, result);
+    void *arg1 = malloc(p1->type_info->element_size);
+    void *arg2 = malloc(p1->type_info->element_size);
+    void *addition_result = malloc(p1->type_info->element_size);
+    getNeutralForAddition(p1->type_info)(addition_result);
     for (int i = 0; i < (*p1).size; i++)
     {
-        void *arg1 = getValue(p1, i);
-        void *arg2 = getValue(p2, i);
-        //        setValue(res, i, p1.add(getValue(p1,i), getValue(p2,i)));
-        void *addition_result = getAdd((*p1).getTypeInfo())(arg1, arg2);
-        setValue(res, i, addition_result);
-        free(arg1);
-        free(arg2);
+        getValue(p1, i, arg1);
+        getValue(p2, i, arg2);
+        getAdd((*p1).type_info)(arg1, arg2, addition_result);
+        setValue(result, i, addition_result);
     }
-    return res;
+    free(arg1);
+    free(arg2);
+    free(addition_result);
 }
 
-void *composePolynomials(Polynomial *p1, Polynomial *p2)
+void composePolynomials(const Polynomial *p1, const Polynomial *p2, void *result)
 {
-    void *res = getValue(p1, 0);
-    for (int i = 1; i < (*p1).size; i++)
-    {
-        void *power_arg = getValue(p2, i);
-        void *powered_arg = getPower((*p1).getTypeInfo())(power_arg, i);
-        void *multiplier = getValue(p1, i);
-        void *multiplication_result = getMultiply((*p1).getTypeInfo())(multiplier, powered_arg);
-        void *addition_result = getAdd((*p1).getTypeInfo())(res, multiplication_result);
-        memcpy(res, addition_result, (*p1).element_size);
-        free(power_arg);
-        free(multiplier);
-        free(powered_arg);
-        free(multiplication_result);
-        free(addition_result);
-    }
-    return res;
-}
-
-void *calculatePolynomial(Polynomial *p1, void *argument)
-{
-    void *res = getValue(p1, 0);
-    for (int i = 1; i < (*p1).size; i++)
-    {
-        void *powered_arg = getPower((*p1).getTypeInfo())(argument, i);
-        void *multiplier = getValue(p1, i);
-        void *multiplication_result = getMultiply((*p1).getTypeInfo())(multiplier, powered_arg);
-        void *addition_result = getAdd((*p1).getTypeInfo())(res, multiplication_result);
-        memcpy(res, addition_result, (*p1).element_size);
-        free(multiplier);
-        free(multiplication_result);
-        free(addition_result);
-        free(powered_arg);
-    }
-    return res;
-}
-
-Polynomial *multiplyPolynomials(Polynomial *p1, Polynomial *p2)
-{
-    Polynomial *res = (Polynomial *)malloc(sizeof(Polynomial));
-    copyPolynomials(res, p1);
+    void *power_arg = malloc(p1->type_info->element_size);
+    void *powered_arg = malloc(p1->type_info->element_size);
+    void *multiplier = malloc(p1->type_info->element_size);
+    void *multiplication_result = malloc(p1->type_info->element_size);
+    void *addition_result = malloc(p1->type_info->element_size);
+    getNeutralForAddition(p1->type_info)(result);
     for (int i = 0; i < (*p1).size; i++)
     {
-        void *arg1 = getValue(p1, i);
-        void *arg2 = getValue(p2, i);
-        void *multiply_result = getMultiply((*p1).getTypeInfo())(arg1, arg2);
-        setValue(res, i, multiply_result);
-        free(arg1);
-        free(arg2);
-        free(multiply_result);
+        getValue(p2, i, power_arg);
+        getPower((*p1).type_info)(power_arg, i, powered_arg);
+        getValue(p1, i, multiplier);
+        getMultiply((*p1).type_info)(multiplier, powered_arg, multiplication_result);
+        getAdd((*p1).type_info)(result, multiplication_result, addition_result);
+        memcpy(result, addition_result, (*p1).type_info->element_size);
     }
-    return res;
+    free(power_arg);
+    free(multiplier);
+    free(powered_arg);
+    free(multiplication_result);
+    free(addition_result);
 }
 
-Polynomial *multiplyPolynomialByScalar(Polynomial *p1, void *scalar)
+void calculatePolynomial(const Polynomial *p1, const void *argument, void *result)
 {
-    Polynomial *res = (Polynomial *)malloc(sizeof(Polynomial));
-    copyPolynomials(res, p1);
+    void *powered_arg = malloc(p1->type_info->element_size);
+    void *multiplier = malloc(p1->type_info->element_size);
+    void *multiplication_result = malloc(p1->type_info->element_size);
+    void *addition_result = malloc(p1->type_info->element_size);
+    getNeutralForAddition(p1->type_info)(result);
+    for (int i = 0; i < p1->size; i++)
+    {
+        getPower((*p1).type_info)(argument, i, powered_arg);
+        getValue(p1, i, multiplier);
+        getMultiply((*p1).type_info)(multiplier, powered_arg, multiplication_result);
+        getAdd((*p1).type_info)(result, multiplication_result, addition_result);
+        memcpy(result, addition_result, (*p1).type_info->element_size);
+    }
+    free(multiplier);
+    free(multiplication_result);
+    free(addition_result);
+    free(powered_arg);
+}
+
+void multiplyPolynomials(const Polynomial *p1, const Polynomial *p2, Polynomial *result)
+{
+    copyPolynomialStucture(result, p1);
+    void *arg1 = malloc(p1->type_info->element_size);
+    void *arg2 = malloc(p1->type_info->element_size);
+    void *multiplication_result = malloc(p1->type_info->element_size);
+    getNeutralForMultiplication(multiplication_result);
     for (int i = 0; i < (*p1).size; i++)
     {
-        void *multiplier = getValue(p1, i);
-        void *multiplication_result = getMultiply((*p1).getTypeInfo())(multiplication_result, scalar);
-        setValue(res, i, multiplication_result);
-        free(multiplication_result);
-        free(multiplier);
+        getValue(p1, i, arg1);
+        getValue(p2, i, arg2);
+        getMultiply((*p1).type_info)(arg1, arg2, multiplication_result);
+        setValue(result, i, multiplication_result);
     }
-    return res;
+    free(arg1);
+    free(arg2);
+    free(multiplication_result);
+}
+
+void multiplyPolynomialByScalar(const Polynomial *p, const void *scalar, Polynomial *result)
+{
+    copyPolynomialStucture(result, p);
+    void *multiplier = malloc(p->type_info->element_size);
+    void *multiplication_result = malloc(p->type_info->element_size);
+    getNeutralForMultiplication(multiplication_result);
+    for (int i = 0; i < (*p).size; i++)
+    {
+        getValue(p, i, multiplier);
+        getMultiply((*p).type_info)(multiplication_result, scalar, multiplication_result);
+        setValue(result, i, multiplication_result);
+    }
+    free(multiplication_result);
+    free(multiplier);
 }
 
 // Copies everything except for element values
-void copyPolynomials(Polynomial *p1, Polynomial *p2)
+void copyPolynomialStucture(Polynomial *destination, const Polynomial *source)
 {
-    (*p1).size = (*p2).size;
-    (*p1).element_size = (*p2).element_size;
+    destination->size = source->size;
+    destination->type_info = source->type_info;
 
-    (*p1).getTypeInfo = (*p2).getTypeInfo;
-
-    (*p1).coefficients = malloc(p1->size * p1->element_size);
+    destination->coefficients = malloc(destination->size * destination->type_info->element_size);
 }
 
-void printPolynomial(Polynomial *p)
+void printPolynomial(const Polynomial *p)
 {
+    void *argument = malloc(p->type_info->element_size);
     for (int i = 0; i < (*p).size; i++)
     {
         if (i != 0)
             printf(" + ");
         printf("(");
-        void *argument = getValue(p, i);
-        getPrint(p->getTypeInfo())(argument);
+        getValue(p, i, argument);
+        getPrint(p->type_info)(argument);
         printf(")x^%d", i);
     }
+    free(argument);
     printf("\n");
 }
 
-void *getValue(Polynomial *p, int i)
+void getValue(const Polynomial *p, const int i, void *destination)
 {
-    void *val = malloc((*p).element_size);
     if (i <= (*p).size)
     {
-        memcpy(val, ((char *)(*p).coefficients + i * (*p).element_size), (*p).element_size);
+        memcpy(destination, ((char *)(*p).coefficients + i * (*p).type_info->element_size), (*p).type_info->element_size);
     }
-    return val;
 }
 
-void setValue(Polynomial *p, int i, void *value)
+void setValue(Polynomial *p, const int i, const void *value)
 {
-    memcpy(((char *)(*p).coefficients + i * (*p).element_size), value, (*p).element_size);
+    memcpy(((char *)(*p).coefficients + i * (*p).type_info->element_size), value, (*p).type_info->element_size);
 }

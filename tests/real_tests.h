@@ -1,3 +1,5 @@
+#pragma once
+
 #include "../types/real.h"
 
 void test_realAddition();
